@@ -1,6 +1,7 @@
 {
   "domain": "motogp_sensor",
   "name": "MotoGP Sensor",
+  "categories": ["media_entertainment", "news_social_media"],
   "codeowners": ["@aubierr"],
   "config_flow": true,
   "documentation": "https://github.com/aubierr/motogp_sensor",
