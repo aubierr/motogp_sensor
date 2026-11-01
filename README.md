@@ -124,6 +124,10 @@ ruff check . && ruff format --check .
 
 Tests run against real API payloads stored in `tests/fixtures`. The Home Assistant test harness only supports Linux (or WSL).
 
+## License
+
+[MIT](LICENSE)
+
 ---
 
 > [!NOTE]
