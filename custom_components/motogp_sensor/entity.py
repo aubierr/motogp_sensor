@@ -1,258 +1,124 @@
-"""Base entity classes and localized naming for MotoGP Sensor."""
+"""Base entity for the MotoGP Sensor integration."""
+
 from __future__ import annotations
 
-import asyncio
-from contextlib import suppress
-import json
-from pathlib import Path
+from datetime import datetime
+from typing import Any
 
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.entity import Entity
+from homeassistant.core import CALLBACK_TYPE, callback
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import (
-    CONF_ENTITY_NAME_LANGUAGE,
-    CONF_ENTITY_NAME_MODE,
-    DEFAULT_ENTITY_NAME_LANGUAGE,
-    DOMAIN,
-    ENTITY_NAME_MODE_LEGACY,
-    ENTITY_NAME_MODE_LOCALIZED,
-)
+from .const import CONF_LEGACY_DISABLED, DOMAIN
+from .coordinator import MotoGPConfigEntry, MotoGPCoordinator
 
-_TRANSLATIONS_DIR = Path(__file__).parent / "translations"
-
-# Module-level caches — survive for the life of the HA process.
-_ENTRY_NAME_SETTINGS: dict[str, tuple[str, str]] = {}
-_TRANSLATION_NAME_CACHE: dict[str, dict[str, str]] = {}
+_MISSING: Any = object()
 
 
-# ── Language / cache helpers ──────────────────────────────────────────────────
-
-
-def _normalize_language(language: str | None) -> str:
-    """Normalize a stored language code for translation lookup."""
-    if not language:
-        return DEFAULT_ENTITY_NAME_LANGUAGE
-    normalized = str(language).strip().replace("_", "-").lower()
-    return normalized or DEFAULT_ENTITY_NAME_LANGUAGE
-
-
-def _translation_language_candidates(language: str | None) -> tuple[str, ...]:
-    """Return translation file candidates in priority order."""
-    normalized = _normalize_language(language)
-    candidates: list[str] = []
-    for candidate in (
-        normalized,
-        normalized.split("-", 1)[0],
-        DEFAULT_ENTITY_NAME_LANGUAGE,
-    ):
-        if candidate and candidate not in candidates:
-            candidates.append(candidate)
-    return tuple(candidates)
-
-
-def _read_translation_names(language: str) -> dict[str, str]:
-    """Read entity display names from a bundled translation file."""
-    try:
-        path = _TRANSLATIONS_DIR / f"{_normalize_language(language)}.json"
-        data = json.loads(path.read_text(encoding="utf-8"))
-        result: dict[str, str] = {}
-        for entities in data.get("entity", {}).values():
-            for key, attrs in entities.items():
-                if isinstance(attrs, dict) and (n := attrs.get("name")):
-                    result[key] = n
-        return result
-    except Exception:
-        return {}
-
-
-def _prime_translation_names(languages: tuple[str, ...]) -> None:
-    """Load translation files into the cache (blocking — run in executor)."""
-    for language in languages:
-        normalized = _normalize_language(language)
-        if normalized in _TRANSLATION_NAME_CACHE:
-            continue
-        _TRANSLATION_NAME_CACHE[normalized] = _read_translation_names(normalized)
-
-
-async def async_prepare_translation_names(
-    hass: HomeAssistant, entry_id: str | None = None
-) -> None:
-    """Preload translation files that may be needed during entity setup."""
-    mode, language = _entry_name_settings(entry_id)
-    languages = list(_translation_language_candidates(DEFAULT_ENTITY_NAME_LANGUAGE))
-    if mode == ENTITY_NAME_MODE_LOCALIZED:
-        for candidate in _translation_language_candidates(language):
-            if candidate not in languages:
-                languages.append(candidate)
-    await hass.async_add_executor_job(_prime_translation_names, tuple(languages))
-
-
-# ── Entry name settings ───────────────────────────────────────────────────────
-
-
-def register_entry_name_settings(entry_id: str, data: dict) -> None:
-    """Register naming mode and language for a config entry."""
-    mode = data.get(CONF_ENTITY_NAME_MODE, ENTITY_NAME_MODE_LEGACY)
-    if mode not in (ENTITY_NAME_MODE_LEGACY, ENTITY_NAME_MODE_LOCALIZED):
-        mode = ENTITY_NAME_MODE_LEGACY
-    language = _normalize_language(data.get(CONF_ENTITY_NAME_LANGUAGE))
-    _ENTRY_NAME_SETTINGS[entry_id] = (mode, language)
-    # If called outside the event loop (e.g. in tests), prime synchronously.
-    try:
-        asyncio.get_running_loop()
-    except RuntimeError:
-        languages = list(_translation_language_candidates(DEFAULT_ENTITY_NAME_LANGUAGE))
-        if mode == ENTITY_NAME_MODE_LOCALIZED:
-            for candidate in _translation_language_candidates(language):
-                if candidate not in languages:
-                    languages.append(candidate)
-        _prime_translation_names(tuple(languages))
-
-
-def unregister_entry_name_settings(entry_id: str) -> None:
-    """Remove naming settings for a config entry."""
-    _ENTRY_NAME_SETTINGS.pop(entry_id, None)
-
-
-def clear_entry_name_settings() -> None:
-    """Clear all cached settings — used in tests."""
-    _ENTRY_NAME_SETTINGS.clear()
-    _TRANSLATION_NAME_CACHE.clear()
-
-
-def _entry_name_settings(entry_id: str | None) -> tuple[str, str]:
-    """Return the naming mode and language for an entry."""
-    if not entry_id:
-        return ENTITY_NAME_MODE_LEGACY, DEFAULT_ENTITY_NAME_LANGUAGE
-    return _ENTRY_NAME_SETTINGS.get(
-        entry_id,
-        (ENTITY_NAME_MODE_LEGACY, DEFAULT_ENTITY_NAME_LANGUAGE),
-    )
-
-
-# ── Name resolution ───────────────────────────────────────────────────────────
-
-
-def _translated_entity_name(translation_key: str, language: str) -> str | None:
-    """Return the first matching translated entity name for a language."""
-    for candidate in _translation_language_candidates(language):
-        if name := _TRANSLATION_NAME_CACHE.get(candidate, {}).get(translation_key):
-            return name
-    return None
-
-
-def _entity_name_from_key(
-    translation_key: str | None, *, entry_id: str | None = None
-) -> str | None:
-    """Return a display name without any device prefix."""
-    if not translation_key:
-        return None
-    mode, language = _entry_name_settings(entry_id)
-    if mode == ENTITY_NAME_MODE_LOCALIZED:
-        if name := _translated_entity_name(translation_key, language):
-            return name
-    elif name := _translated_entity_name(translation_key, DEFAULT_ENTITY_NAME_LANGUAGE):
-        return name
-    # Fallback: capitalize translation key words
-    parts = translation_key.replace("_", " ").split()
-    if not parts:
-        return None
-    return " ".join([parts[0].capitalize()] + parts[1:])
-
-
-# ── Object ID helpers ─────────────────────────────────────────────────────────
-
-
-def default_object_id(key: str | None) -> str | None:
-    """Build a stable suggested object_id for an entity key.
-
-    Produces ``motogp_{key}`` to avoid collisions with other integrations.
-    """
-    if not key:
-        return None
-    normalized = str(key).strip().replace("-", "_").lower()
-    return f"motogp_{normalized}" if normalized else None
-
-
-def set_suggested_object_id(entity: Entity, object_id: str | None) -> None:
-    """Attach a stable suggested object ID to an entity."""
-    if object_id:
-        entity._attr_suggested_object_id = object_id  # noqa: SLF001
-
-
-# ── Base entity classes ───────────────────────────────────────────────────────
-
-
-def _build_device_info(entry_id: str, device_name: str) -> dict:
-    """Return a shared DeviceInfo dict for all MotoGP Sensor entities."""
-    from homeassistant.helpers.entity import DeviceInfo  # local import to avoid cycle
-
+def device_info(entry: MotoGPConfigEntry) -> DeviceInfo:
     return DeviceInfo(
-        identifiers={(DOMAIN, entry_id)},
-        name=device_name,
-        manufacturer="MotoGP",
-        model="Live Timing",
+        identifiers={(DOMAIN, entry.entry_id)},
+        name=entry.title,
+        manufacturer="MotoGP (unofficial)",
+        model="Season and live timing",
         entry_type=DeviceEntryType.SERVICE,
+        configuration_url="https://www.motogp.com",
     )
 
 
-class MotoGPBaseEntity(CoordinatorEntity):
-    """Base entity for coordinators-backed MotoGP sensors.
+class MotoGPEntity[CoordinatorT: MotoGPCoordinator[Any]](CoordinatorEntity[CoordinatorT]):
+    """Coordinator entity with No Spoiler support and time based refreshes.
 
-    Sub-classes should set ``_attr_translation_key`` and call super().__init__
-    with coordinator, entry_id, and device_name taken from entry.data.
+    Subclasses read ``self.data`` instead of ``self.coordinator.data``: while
+    No Spoiler Mode is on, spoiler entities get the data frozen when the mode
+    was switched on (or become unavailable after a restart).
     """
 
     _attr_has_entity_name = True
+    _spoiler = False
 
     def __init__(
-        self,
-        coordinator: object,
-        unique_id: str,
-        entry_id: str,
-        device_name: str,
+        self, coordinator: CoordinatorT, key: str, unique_suffix: str | None = None
     ) -> None:
-        CoordinatorEntity.__init__(self, coordinator)
-        self._entry_id = entry_id
-        self._attr_unique_id = unique_id
-        self._attr_device_info = _build_device_info(entry_id, device_name)
+        super().__init__(coordinator)
+        entry = coordinator.config_entry
+        self._attr_translation_key = key
+        self._attr_unique_id = f"{entry.entry_id}_{unique_suffix or key}"
+        self._attr_device_info = device_info(entry)
+        if key in entry.data.get(CONF_LEGACY_DISABLED, ()):
+            self._attr_entity_registry_enabled_default = False
+        self._frozen: Any = _MISSING
+        self._unsub_timer: CALLBACK_TYPE | None = None
+
+    # ── No Spoiler Mode ──────────────────────────────────────────────────────
 
     @property
-    def name(self) -> str | None:
-        # Honour translation_key-based naming set by subclasses.
-        if self._attr_translation_key:
-            return _entity_name_from_key(
-                self._attr_translation_key, entry_id=self._entry_id
-            )
-        return super().name
-
-
-class MotoGPAuxEntity(Entity):
-    """Base entity for MotoGP entities NOT bound to a DataUpdateCoordinator.
-
-    Used for: switches, selects, diagnostic entities that read directly from
-    hass.data rather than via a coordinator.
-    """
-
-    _attr_has_entity_name = True
-    _attr_should_poll = False
-
-    def __init__(
-        self,
-        unique_id: str,
-        entry_id: str,
-        device_name: str,
-    ) -> None:
-        self._entry_id = entry_id
-        self._attr_unique_id = unique_id
-        self._attr_device_info = _build_device_info(entry_id, device_name)
+    def _hidden(self) -> bool:
+        return self._spoiler and self.coordinator.config_entry.runtime_data.no_spoiler.is_active
 
     @property
-    def name(self) -> str | None:
-        if self._attr_translation_key:
-            return _entity_name_from_key(
-                self._attr_translation_key, entry_id=self._entry_id
+    def data(self) -> Any:
+        if self._hidden:
+            return None if self._frozen is _MISSING else self._frozen
+        return self.coordinator.data
+
+    @property
+    def available(self) -> bool:
+        if self._hidden:
+            return self._frozen is not _MISSING
+        return super().available
+
+    @callback
+    def _async_no_spoiler_changed(self, active: bool) -> None:
+        if active and self.coordinator.last_update_success:
+            self._frozen = self.coordinator.data
+        else:
+            self._frozen = _MISSING
+        self.async_write_ha_state()
+
+    # ── Lifecycle ────────────────────────────────────────────────────────────
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        if self._spoiler:
+            self.async_on_remove(
+                self.coordinator.config_entry.runtime_data.no_spoiler.async_add_listener(
+                    self._async_no_spoiler_changed
+                )
             )
-        return super().name
+        self.async_on_remove(self._async_cancel_timer)
+        self._async_schedule_time_update()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        if self._hidden:
+            return
+        super()._handle_coordinator_update()
+        self._async_schedule_time_update()
+
+    # ── Time based refresh ───────────────────────────────────────────────────
+
+    def _next_time_update(self) -> datetime | None:
+        """Return when the state changes without new data (override)."""
+        return None
+
+    @callback
+    def _async_cancel_timer(self) -> None:
+        if self._unsub_timer is not None:
+            self._unsub_timer()
+            self._unsub_timer = None
+
+    @callback
+    def _async_schedule_time_update(self) -> None:
+        self._async_cancel_timer()
+        if (when := self._next_time_update()) is not None:
+            self._unsub_timer = async_track_point_in_utc_time(
+                self.hass, self._async_time_update, when
+            )
+
+    @callback
+    def _async_time_update(self, _now: datetime) -> None:
+        self._unsub_timer = None
+        self.async_write_ha_state()
+        self._async_schedule_time_update()

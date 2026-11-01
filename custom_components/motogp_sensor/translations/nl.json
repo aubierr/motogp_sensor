@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "Seizoenskalender, klassementen, uitslagen, live timing en circuitweer voor MotoGP. Gegevens van de openbare Pulselive-API (onofficiële integratie).",
+        "data": {
+          "race_week_start_day": "Begin van de raceweek"
+        },
+        "data_description": {
+          "race_week_start_day": "Wanneer de binaire sensor Raceweek aangaat. Hij gaat uit aan het einde van de racedag, en niet eerder dan 3 uur na de start."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Kan geen verbinding maken met de MotoGP-API"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor is al geconfigureerd"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opties van MotoGP Sensor",
+        "data": {
+          "race_week_start_day": "Begin van de raceweek"
+        },
+        "data_description": {
+          "race_week_start_day": "Wanneer de binaire sensor Raceweek aangaat. Hij gaat uit aan het einde van de racedag, en niet eerder dan 3 uur na de start."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "Maandag van de GP-week",
+        "sunday": "Zondag voor de GP-week",
+        "event_start": "Eerste dag van de GP (alleen raceweekend)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Raceweek begonnen",
+      "race_week_ended": "Raceweek afgelopen",
+      "session_in_progress": "Sessie gestart",
+      "session_finished": "Sessie afgelopen",
+      "session_red_flag": "Rode vlag",
+      "session_cancelled": "Sessie geannuleerd",
+      "session_delayed": "Sessie uitgesteld",
+      "live_timing_online": "Live timing online",
+      "live_timing_offline": "Live timing offline"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Raceweek"
+      },
+      "live_timing_online": {
+        "name": "Live timing online"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Seizoenskalender"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "Volgende race"
+      },
+      "next_session": {
+        "name": "Volgende sessie"
+      },
+      "current_season": {
+        "name": "Huidig seizoen"
+      },
+      "rider_standings": {
+        "name": "Rijdersklassement"
+      },
+      "team_standings": {
+        "name": "Teamklassement"
+      },
+      "constructor_standings": {
+        "name": "Constructeursklassement"
+      },
+      "last_race_results": {
+        "name": "Uitslag laatste race"
+      },
+      "last_sprint_results": {
+        "name": "Uitslag laatste sprint"
+      },
+      "session_status": {
+        "name": "Sessiestatus",
+        "state": {
+          "cancelled": "Geannuleerd",
+          "delayed": "Uitgesteld",
+          "finished": "Afgelopen",
+          "in_progress": "Bezig",
+          "not_started": "Niet gestart",
+          "red_flag": "Rode vlag"
+        }
+      },
+      "current_session": {
+        "name": "Huidige sessie"
+      },
+      "race_lap_count": {
+        "name": "Huidige ronde"
+      },
+      "session_time_remaining": {
+        "name": "Resterende sessietijd"
+      },
+      "rider_list": {
+        "name": "Rijderslijst"
+      },
+      "rider_positions": {
+        "name": "Posities van rijders"
+      },
+      "top_three": {
+        "name": "Top drie"
+      },
+      "leader": {
+        "name": "Leider"
+      },
+      "fastest_lap": {
+        "name": "Snelste ronde"
+      },
+      "pit_stops": {
+        "name": "Rijders in de pit"
+      },
+      "track_weather": {
+        "name": "Circuitweer",
+        "state": {
+          "clear_sky": "Onbewolkt",
+          "drizzle": "Motregen",
+          "fog": "Mist",
+          "freezing_drizzle": "Onderkoelde motregen",
+          "freezing_rain": "Onderkoelde regen",
+          "heavy_rain": "Zware regen",
+          "heavy_showers": "Zware buien",
+          "light_rain": "Lichte regen",
+          "mainly_clear": "Overwegend helder",
+          "overcast": "Bewolkt",
+          "partly_cloudy": "Half bewolkt",
+          "rain": "Regen",
+          "showers": "Buien",
+          "snow": "Sneeuw",
+          "thunderstorm": "Onweer"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "Spoilervrije modus"
+      }
+    }
+  }
+}

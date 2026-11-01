@@ -43,9 +43,25 @@ If your PR mixes code changes with documentation changes, target `dev`. The docs
 4. Make your changes and commit them with clear messages.
 5. Open a pull request against the correct branch of this repository.
 
+## Code layout and checks
+
+- `api.py` does the HTTP requests, `parsers.py` turns the JSON into the dataclasses of `models.py`. Neither depends on Home Assistant state, so new parsing logic gets a unit test in `tests/test_parsers.py`.
+- `coordinator.py` holds the data update coordinators, the platforms only read their data.
+- `strings.json` is the source of the translations: copy changes to `translations/en.json` and translate them in the other files.
+
+Before opening a pull request:
+
+```bash
+pip install -r requirements_test.txt
+pytest
+ruff check . && ruff format --check .
+```
+
+CI also runs hassfest and the HACS validation.
+
 ## API data and reverse engineering
 
-MotoGP Sensor relies on public REST endpoints exposed by Pulselive and motogp.com. If you discover changes in the API response schema, please open an issue describing the new structure before submitting a fix — this helps coordinate testing across different race weekend scenarios.
+MotoGP Sensor relies on public REST endpoints exposed by Pulselive. If you discover changes in the API response schema, please open an issue describing the new structure before submitting a fix — this helps coordinate testing across different race weekend scenarios. Add the new payload to `tests/fixtures` so the change is covered by the tests.
 
 ## Questions
 

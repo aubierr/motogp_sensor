@@ -3,128 +3,158 @@
     "step": {
       "user": {
         "title": "MotoGP Sensor",
-        "description": "Configure the MotoGP Sensor integration.",
+        "description": "Season calendar, standings, results, live timing and track weather for MotoGP. Data from the public Pulselive API (unofficial integration).",
         "data": {
-          "sensor_name": "Device name",
-          "enabled_sensors": "Sensors to enable",
-          "live_source": "Live timing source",
-          "race_week_start_day": "Race week start day"
+          "race_week_start_day": "Race week starts"
         },
         "data_description": {
-          "sensor_name": "Name shown in Home Assistant (e.g. \"MotoGP\")",
-          "enabled_sensors": "Select the sensors you want to create",
-          "live_source": "Data source for live session timing",
-          "race_week_start_day": "Day of the week the race week window opens"
-        }
-      },
-      "reconfigure": {
-        "title": "Reconfigure MotoGP Sensor",
-        "description": "Update your MotoGP Sensor settings.",
-        "data": {
-          "sensor_name": "Device name",
-          "enabled_sensors": "Sensors to enable",
-          "live_source": "Live timing source",
-          "race_week_start_day": "Race week start day"
-        },
-        "data_description": {
-          "sensor_name": "Name shown in Home Assistant",
-          "enabled_sensors": "Select the sensors you want to create",
-          "live_source": "Data source for live session timing",
-          "race_week_start_day": "Day of the week the race week window opens"
+          "race_week_start_day": "When the Race week binary sensor turns on. It turns off at the end of the race day, and not before 3 hours after the race start."
         }
       }
     },
     "error": {
-      "cannot_connect": "Failed to connect to MotoGP API"
+      "cannot_connect": "Failed to connect to the MotoGP API"
     },
     "abort": {
-      "already_configured": "MotoGP Sensor is already configured",
-      "reconfigure_successful": "Configuration updated successfully"
+      "single_instance_allowed": "MotoGP Sensor is already configured"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MotoGP Sensor options",
+        "data": {
+          "race_week_start_day": "Race week starts"
+        },
+        "data_description": {
+          "race_week_start_day": "When the Race week binary sensor turns on. It turns off at the end of the race day, and not before 3 hours after the race start."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "Monday of the GP week",
+        "sunday": "Sunday before the GP week",
+        "event_start": "First day of the GP (race weekend only)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Race week started",
+      "race_week_ended": "Race week ended",
+      "session_in_progress": "Session started",
+      "session_finished": "Session finished",
+      "session_red_flag": "Red flag",
+      "session_cancelled": "Session cancelled",
+      "session_delayed": "Session delayed",
+      "live_timing_online": "Live timing online",
+      "live_timing_offline": "Live timing offline"
     }
   },
   "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Race week"
+      },
+      "live_timing_online": {
+        "name": "Live timing online"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Season calendar"
+      }
+    },
     "sensor": {
       "next_race": {
-        "name": "Next Race"
+        "name": "Next race"
+      },
+      "next_session": {
+        "name": "Next session"
       },
       "current_season": {
-        "name": "Current Season"
+        "name": "Current season"
       },
       "rider_standings": {
-        "name": "Rider Standings"
+        "name": "Rider standings"
+      },
+      "team_standings": {
+        "name": "Team standings"
+      },
+      "constructor_standings": {
+        "name": "Constructor standings"
       },
       "last_race_results": {
-        "name": "Last Race Results"
+        "name": "Last race results"
+      },
+      "last_sprint_results": {
+        "name": "Last sprint results"
       },
       "session_status": {
-        "name": "Session Status"
+        "name": "Session status",
+        "state": {
+          "cancelled": "Cancelled",
+          "delayed": "Delayed",
+          "finished": "Finished",
+          "in_progress": "In progress",
+          "not_started": "Not started",
+          "red_flag": "Red flag"
+        }
       },
       "current_session": {
-        "name": "Current Session"
+        "name": "Current session"
       },
       "race_lap_count": {
-        "name": "Race Lap Count"
+        "name": "Race lap count"
+      },
+      "session_time_remaining": {
+        "name": "Session time remaining"
       },
       "rider_list": {
-        "name": "Rider List"
+        "name": "Rider list"
       },
       "rider_positions": {
-        "name": "Rider Positions"
+        "name": "Rider positions"
       },
       "top_three": {
-        "name": "Top Three"
+        "name": "Top three"
       },
       "leader": {
         "name": "Leader"
       },
       "fastest_lap": {
-        "name": "Fastest Lap"
-      },
-      "session_time_remaining": {
-        "name": "Session Time Remaining"
-      },
-      "live_timing_source": {
-        "name": "Live Timing Source"
-      },
-      "official_live_diagnostic": {
-        "name": "Official Live Timing Diagnostic"
-      },
-      "constructor_standings": {
-        "name": "Constructor Standings"
-      },
-      "track_weather": {
-        "name": "Track Weather"
+        "name": "Fastest lap"
       },
       "pit_stops": {
-        "name": "Pit Stops"
-      }
-    },
-    "binary_sensor": {
-      "race_week": {
-        "name": "Race Week"
+        "name": "Pit stops"
       },
-      "live_timing_online": {
-        "name": "Live Timing Online"
-      }
-    },
-    "calendar": {
-      "season_calendar": {
-        "name": "Season Calendar"
+      "track_weather": {
+        "name": "Track weather",
+        "state": {
+          "clear_sky": "Clear sky",
+          "drizzle": "Drizzle",
+          "fog": "Fog",
+          "freezing_drizzle": "Freezing drizzle",
+          "freezing_rain": "Freezing rain",
+          "heavy_rain": "Heavy rain",
+          "heavy_showers": "Heavy showers",
+          "light_rain": "Light rain",
+          "mainly_clear": "Mainly clear",
+          "overcast": "Overcast",
+          "partly_cloudy": "Partly cloudy",
+          "rain": "Rain",
+          "showers": "Showers",
+          "snow": "Snow",
+          "thunderstorm": "Thunderstorm"
+        }
       }
     },
     "switch": {
       "no_spoiler_mode": {
-        "name": "No Spoiler Mode"
-      }
-    },
-    "select": {
-      "live_source": {
-        "name": "Live Source",
-        "state": {
-          "pulselive": "Pulselive",
-          "official": "Official",
-          "auto": "Auto"
-        }
+        "name": "No Spoiler mode"
       }
     }
   }

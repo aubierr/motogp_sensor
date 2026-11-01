@@ -8,6 +8,9 @@ jobs:
   build:
     name: Build and upload release asset
     runs-on: ubuntu-latest
+    # The default GITHUB_TOKEN is read-only: uploading the asset needs write.
+    permissions:
+      contents: write
     env:
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 

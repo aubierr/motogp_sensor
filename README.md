@@ -1,120 +1,132 @@
 # MotoGP Sensor for Home Assistant
 
-[![Last commit](https://img.shields.io/github/last-commit/RickyLeRoi/motogp_sensor)](#)
-[![Version](https://img.shields.io/github/v/release/RickyLeRoi/motogp_sensor)](#)
+[![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=aubierr&repository=motogp_sensor&category=integration)
+[![Last commit](https://img.shields.io/github/last-commit/aubierr/motogp_sensor)](https://github.com/aubierr/motogp_sensor/commits)
+[![Version](https://img.shields.io/github/v/release/aubierr/motogp_sensor)](https://github.com/aubierr/motogp_sensor/releases)
 [![HA Community forum](https://img.shields.io/badge/Home%20Assistant-Community%20Forum-319fee?logo=home-assistant)](https://community.home-assistant.io/)
 
 ## Your home, in sync with MotoGP
 
-**`MotoGP Sensor`** is a custom [Home Assistant](https://www.home-assistant.io/) integration that brings the full world of MotoGP into your smart home.
-
-It combines live session timing with static season information, giving you everything from real-time rider positions, lap times, and pit stop data to race schedules, standings, and historical race results.
-
-Whether you want your lights to react to the start of a race weekend or build dashboards that visualize the championship standings, `MotoGP Sensor` keeps your home perfectly in sync with MotoGP.
+**`MotoGP Sensor`** is a custom [Home Assistant](https://www.home-assistant.io/) integration that brings the MotoGP season into your smart home: calendar and session times, championship standings, race and sprint results, live timing and the weather at the circuit.
 
 > This project is inspired by the excellent [F1 Sensor](https://github.com/Nicxe/f1_sensor) integration by [@Nicxe](https://github.com/Nicxe).
+
+> [!IMPORTANT]
+> Version 2 is a rewrite with breaking changes. Read the [changelog](CHANGELOG.md) before upgrading from 1.x.
 
 ---
 
 ## Features
 
-### 📡 Live Timing
-Real-time data sourced from Pulselive (recommended) or the official motogp.com timing feed:
+### 📅 Season
 
-| Sensor | Description |
-|--------|-------------|
-| Session Status | Current session state (In Progress, Finished, Red Flag, …) |
-| Current Session | Session type abbreviation (RAC, Q1, FP1, SPR, …) |
-| Race Lap Count | Current lap number across all riders |
-| Rider List | All riders in the current session with team and bike info |
-| Rider Positions | Full position board with gaps, intervals, and last lap time |
-| Top Three | Podium snapshot — leader's name as state |
-| Leader | Current session leader with full detail attributes |
-| Fastest Lap | Approximate fastest lap in the session |
-| Session Time Remaining | Remaining session time (when available in the payload) |
-| Track Weather | Air/track temperature, humidity, wind from live head data |
-| Pit Stops | Count of riders currently in pit with a full rider list |
+| Entity | State | Main attributes |
+|--------|-------|-----------------|
+| Next race | Name of the ongoing or next GP | `round`, circuit, country, dates, `<session>_start` for `fp1`, `practice`, `fp2`, `q1`, `q2`, `sprint`, `warm_up`, `race`, `sessions` |
+| Next session | Start time of the next session (timestamp) | `session`, `event`, `round` |
+| Current season | Season year | `total_events` |
+| Season calendar | Calendar of every GP (all day) and the sessions of the next GP | |
+| Race week (binary) | On from the configured day until the end of the race day (at least 3 h after the race start) | `window_start`, `window_end` |
 
-### 📅 Season Data
-Polled once daily from the Pulselive REST API:
+Tests (pre-season and in-season) are ignored, and rounds follow the calendar order.
 
-| Sensor / Entity | Description |
-|-----------------|-------------|
-| Next Race | Name, circuit, country, and dates of the next event |
-| Current Season | Active season year with totals |
-| Rider Standings | Full championship standings list |
-| Constructor Standings | Team/constructor championship standings |
-| Last Race Results | Classification of the most recently completed race |
-| Season Calendar | HA Calendar entity with all GP events |
+### 🏆 Championship and results
 
-### 🔴 Binary Sensors
-| Sensor | Description |
-|--------|-------------|
-| Race Week | ON during a MotoGP race weekend (configurable window start day + 3 h grace period) |
-| Live Timing Online | ON when at least one live timing source is reachable |
+| Entity | State | Main attributes |
+|--------|-------|-----------------|
+| Rider standings | Championship leader | `standings` (points, race and sprint wins/podiums) |
+| Team standings | Leading team | `standings` |
+| Constructor standings | Leading make | `standings` |
+| Last race results | Name of the GP | `winner`, `results` (position, time, gap, points, status) |
+| Last sprint results | Name of the GP | same as above |
 
-### 🎛️ Controls & Diagnostics
-| Entity | Description |
-|--------|-------------|
-| No Spoiler Mode | Switch — hides live/race result data when travelling or watching on delay |
-| Live Source | Select — choose between Pulselive, Official, or Auto |
-| Live Timing Source | Diagnostic sensor showing the active live feed |
-| Official Live Timing Diagnostic | Health status of the official motogp.com feed |
+Pulselive only publishes the rider championship: team and constructor standings are computed from every Race and Sprint classification of the season (team: all points of its riders; constructor: best placed rider of each make per race). Half points are kept.
 
-### 📆 Device Automations
-Nine built-in device triggers for use in HA automations:
+### 📡 Live timing
+
+| Entity | State |
+|--------|-------|
+| Session status | `not_started`, `in_progress`, `red_flag`, `delayed`, `finished`, `cancelled` (translated) |
+| Current session | Session code (`FP1`, `PR`, `Q2`, `SPR`, `RAC`, …) |
+| Race lap count | Current lap (`total_laps` attribute) |
+| Session time remaining | As published by the live timing |
+| Rider list | Number of riders (`riders` attribute) |
+| Rider positions | Number of riders (`positions`: full board with gaps and last lap) |
+| Top three / Leader | Leader's name |
+| Fastest lap | Quickest *last* lap (approximation: the feed has no session best) |
+| Pit stops | Riders currently in the pit lane (retired riders excluded) |
+| Live timing online (binary, diagnostic) | Whether the feed answers |
+
+Live timing is polled every **10 seconds** while a session is running, red flagged or delayed, and from 15 minutes before each scheduled session; every **5 minutes** otherwise.
+
+### 🌦️ Track weather
+
+Current conditions at the circuit of the ongoing or next GP ([Open-Meteo](https://open-meteo.com/), no API key), the forecast at the race start hour (up to 15 days ahead), and the official track condition and temperature of the latest session.
+
+### 🙈 No Spoiler mode
+
+A switch that freezes standings, results and the live classification (leader, top three, positions, fastest lap, pit stops) at their current state, for when you watch a race on delay. Data keep being fetched, so turning the switch off catches up immediately. After a restart with the mode on, those entities are unavailable until it is turned off. The calendar, session status and weather are never hidden.
+
+### ⚙️ Device triggers
+
 `race_week_started`, `race_week_ended`, `session_in_progress`, `session_finished`, `session_red_flag`, `session_cancelled`, `session_delayed`, `live_timing_online`, `live_timing_offline`
 
 ---
 
 ## Installation
 
+Requires Home Assistant **2025.1** or newer.
+
 ### HACS (recommended)
 
-1. Open HACS → Integrations → ⋮ → **Custom repositories**
-2. Add `https://github.com/RickyLeRoi/motogp_sensor` with category **Integration**
-3. Search for **MotoGP Sensor** and install it
-4. Restart Home Assistant
+[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=aubierr&repository=motogp_sensor&category=integration)
 
 ### Manual
 
 1. Copy the `custom_components/motogp_sensor` folder into your HA `custom_components` directory
 2. Restart Home Assistant
 
----
-
 ## Setup
 
-1. Go to **Settings → Devices & Services → Add Integration**
-2. Search for **MotoGP Sensor** and follow the configuration steps:
-   - Choose a device name
-   - Select which sensors to enable
-   - Pick a live timing source (Pulselive recommended)
-   - Set the race week window start day (Monday by default)
+[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=motogp_sensor)
 
----
+Or go to **Settings → Devices & services → Add integration → MotoGP Sensor**, then choose when the race week starts:
 
-## Configuration options
+| Option | Race week turns on |
+|--------|--------------------|
+| Monday of the GP week (default) | Monday 00:00 of the GP week |
+| Sunday before the GP week | The day before |
+| First day of the GP | On the first day of the GP (race weekend only) |
 
-| Option | Description | Default |
-|--------|-------------|---------|
-| Device name | Label for the HA device | `MotoGP` |
-| Sensors to enable | Multi-select of all available sensor keys | All enabled |
-| Live timing source | `pulselive` / `official` / `auto` | `pulselive` |
-| Race week start day | Day from which the Race Week sensor turns ON | `monday` |
+Change it later with **Configure** on the integration. Entities you do not need can be disabled from the entity settings.
 
-To change options after setup, go to **Settings → Devices & Services → MotoGP Sensor → Configure**.
+## Languages
 
----
+Entity names, states, the setup dialog and the device triggers follow the Home Assistant language:
+English, Czech, Dutch, French, German, Hungarian, Indonesian, Italian, Japanese, Portuguese, Portuguese (Brazil), Spanish and Thai. Corrections from native speakers are welcome.
 
 ## Data sources
 
-| Source | Endpoint | Notes |
-|--------|----------|-------|
-| Pulselive (default) | `api.motogp.pulselive.com/motogp/v1` | REST + live-timing-lite polling |
-| Official (experimental) | `www.motogp.com/en/json/live_timing` | Same backend, different URL |
+| Source | Used for |
+|--------|----------|
+| `api.motogp.pulselive.com/motogp/v1` | Seasons, events, sessions, standings, classifications, live timing |
+| `api.open-meteo.com` | Weather |
 
-Live timing is polled every **10 seconds** when a session is active, and every **5 minutes** otherwise.
+Refresh: schedule every 6 h (30 min during a GP), results every 6 h (15 min from the first day of a GP until the day after), weather every 30 min. Failed requests are retried after 5 minutes.
+
+## Development
+
+```bash
+pip install -r requirements_test.txt
+pytest
+ruff check . && ruff format --check .
+```
+
+Tests run against real API payloads stored in `tests/fixtures`. The Home Assistant test harness only supports Linux (or WSL).
+
+## License
+
+[MIT](LICENSE)
 
 ---
 

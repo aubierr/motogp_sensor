@@ -1,149 +1,116 @@
-"""MotoGP Season Calendar entity for Home Assistant."""
+"""Calendar platform: every Grand Prix, plus the sessions of the next one."""
+
 from __future__ import annotations
 
-import datetime
-import logging
-from typing import Any
+from datetime import date, datetime, timedelta
 
 from homeassistant.components.calendar import CalendarEntity, CalendarEvent
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.util import dt as dt_util
 
-from .const import DOMAIN, KEY_SEASON_COORDINATOR
-from .entity import MotoGPBaseEntity, default_object_id, set_suggested_object_id
-from .helpers import circuit_name, event_country
+from .coordinator import MotoGPConfigEntry, ScheduleCoordinator
+from .entity import MotoGPEntity
+from .models import Event, ScheduleData, Session
 
-_LOGGER = logging.getLogger(__name__)
+PARALLEL_UPDATES = 0
 
-
-def _parse_event_date(date_str: str | None) -> datetime.date | None:
-    """Parse an ISO date string to a date object, ignoring time portion."""
-    if not date_str:
-        return None
-    try:
-        return datetime.date.fromisoformat(str(date_str)[:10])
-    except (ValueError, TypeError):
-        return None
-
-
-class MotoGPSeasonCalendar(MotoGPBaseEntity, CalendarEntity):
-    """CalendarEntity exposing all Grand Prix events of the current MotoGP season."""
-
-    _attr_translation_key = "season_calendar"
-    _attr_icon = "mdi:calendar-star"
-
-    # ── CalendarEntity required property ─────────────────────────────────────
-
-    @property
-    def event(self) -> CalendarEvent | None:
-        """Return the currently ongoing GP, or None."""
-        data = self.coordinator.data
-        if not isinstance(data, dict):
-            return None
-        events: list[dict] = data.get("events") or []
-        today = datetime.date.today()
-        for ev in events:
-            if not isinstance(ev, dict):
-                continue
-            start = _parse_event_date(ev.get("date_start") or ev.get("dateStart"))
-            end = _parse_event_date(ev.get("date_end") or ev.get("dateEnd"))
-            if start is None or end is None:
-                continue
-            if start <= today <= end:
-                return self._event_to_calendar_event(ev)
-        return None
-
-    # ── CalendarEntity async method ───────────────────────────────────────────
-
-    async def async_get_events(
-        self,
-        hass: HomeAssistant,
-        start_date: datetime.datetime,
-        end_date: datetime.datetime,
-    ) -> list[CalendarEvent]:
-        """Return all GP events that overlap the requested date window."""
-        data = self.coordinator.data
-        if not isinstance(data, dict):
-            return []
-        events: list[dict] = data.get("events") or []
-        result: list[CalendarEvent] = []
-        window_start = start_date.date() if isinstance(start_date, datetime.datetime) else start_date
-        window_end = end_date.date() if isinstance(end_date, datetime.datetime) else end_date
-        for ev in events:
-            if not isinstance(ev, dict):
-                continue
-            ev_start = _parse_event_date(ev.get("date_start") or ev.get("dateStart"))
-            ev_end = _parse_event_date(ev.get("date_end") or ev.get("dateEnd"))
-            if ev_start is None or ev_end is None:
-                continue
-            # CalendarEvent end is exclusive, so add 1 day.
-            exclusive_end = ev_end + datetime.timedelta(days=1)
-            # Overlap check: event starts before window end AND event ends after window start.
-            if ev_start < window_end and exclusive_end > window_start:
-                result.append(self._event_to_calendar_event(ev))
-        return result
-
-    # ── Helpers ───────────────────────────────────────────────────────────────
-
-    def _event_to_calendar_event(self, ev: dict) -> CalendarEvent:
-        start = _parse_event_date(ev.get("date_start") or ev.get("dateStart"))
-        end = _parse_event_date(ev.get("date_end") or ev.get("dateEnd"))
-        # CalendarEvent end is exclusive.
-        exclusive_end = (end + datetime.timedelta(days=1)) if end else start
-
-        name = (
-            ev.get("name")
-            or ev.get("officialName")
-            or ev.get("short_name")
-            or ev.get("shortName")
-            or "MotoGP Event"
-        )
-        circuit = circuit_name(ev)
-        country = event_country(ev)
-        location_parts = [p for p in (circuit, country) if p]
-        location = ", ".join(location_parts) if location_parts else None
-
-        data = self.coordinator.data or {}
-        season_year = data.get("season_year")
-        status = str(ev.get("status") or "").strip()
-        description_parts = []
-        if season_year:
-            description_parts.append(f"Season {season_year}")
-        if status:
-            description_parts.append(f"Status: {status}")
-        description = " · ".join(description_parts) or None
-
-        return CalendarEvent(
-            start=start,
-            end=exclusive_end,
-            summary=name,
-            location=location,
-            description=description,
-        )
+# Calendar summaries are free text, so session names are in English.
+_SESSION_NAMES = {
+    "fp1": "Free Practice 1",
+    "practice": "Practice",
+    "fp2": "Free Practice 2",
+    "q1": "Qualifying 1",
+    "q2": "Qualifying 2",
+    "sprint": "Tissot Sprint",
+    "warm_up": "Warm Up",
+    "race": "Grand Prix",
+}
+# The API only gives start times; these typical durations give an end time.
+_SESSION_DURATIONS = {
+    "fp1": timedelta(minutes=45),
+    "practice": timedelta(hours=1),
+    "fp2": timedelta(minutes=30),
+    "q1": timedelta(minutes=15),
+    "q2": timedelta(minutes=15),
+    "sprint": timedelta(minutes=30),
+    "warm_up": timedelta(minutes=10),
+    "race": timedelta(minutes=45),
+}
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MotoGPConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up the MotoGP Season Calendar entity."""
-    disabled: set[str] = set(entry.data.get("disabled_sensors") or [])
-    if "calendar" in disabled:
-        return
+    async_add_entities([MotoGPSeasonCalendar(entry.runtime_data.schedule)])
 
-    reg: dict[str, Any] = hass.data[DOMAIN][entry.entry_id]
-    season_coord = reg.get(KEY_SEASON_COORDINATOR)
-    if season_coord is None:
-        return
 
-    device_name = entry.data.get("sensor_name", "MotoGP")
-    entity = MotoGPSeasonCalendar(
-        season_coord,
-        f"{entry.entry_id}_season_calendar",
-        entry.entry_id,
-        device_name,
+def _gp_event(event: Event, season_year: int | None) -> CalendarEvent:
+    location = ", ".join(p for p in (event.circuit_name, event.country_name) if p)
+    return CalendarEvent(
+        start=event.date_start,
+        end=event.date_end + timedelta(days=1),  # exclusive end
+        summary=event.sponsored_name or event.name,
+        location=location or None,
+        description=f"MotoGP {season_year} · Round {event.round}"
+        if season_year
+        else f"Round {event.round}",
+        uid=event.id,
     )
-    set_suggested_object_id(entity, default_object_id("season_calendar"))
-    async_add_entities([entity])
+
+
+def _session_event(session: Session, event: Event) -> CalendarEvent | None:
+    if session.start is None:
+        return None
+    name = _SESSION_NAMES.get(session.key, session.key.upper())
+    return CalendarEvent(
+        start=session.start,
+        end=session.start + _SESSION_DURATIONS.get(session.key, timedelta(minutes=45)),
+        summary=f"{event.short_name or event.name} · {name}",
+        location=event.circuit_name,
+        description=f"{event.name} - {name} (end time estimated)",
+        uid=session.id,
+    )
+
+
+def _all_events(data: ScheduleData) -> list[CalendarEvent]:
+    items = [_gp_event(ev, data.season_year) for ev in data.events]
+    if data.focus is not None:
+        items += [
+            item for s in data.focus_sessions if (item := _session_event(s, data.focus)) is not None
+        ]
+    return sorted(items, key=lambda e: e.start_datetime_local)
+
+
+def _as_datetime(value: date | datetime) -> datetime:
+    if isinstance(value, datetime):
+        return value
+    return dt_util.start_of_local_day(value)
+
+
+class MotoGPSeasonCalendar(MotoGPEntity[ScheduleCoordinator], CalendarEntity):
+    """All Grands Prix of the season as all-day events."""
+
+    def __init__(self, coordinator: ScheduleCoordinator) -> None:
+        super().__init__(coordinator, "season_calendar")
+
+    @property
+    def event(self) -> CalendarEvent | None:
+        """Return the ongoing or next event."""
+        if (data := self.data) is None:
+            return None
+        now = dt_util.now()
+        return next((e for e in _all_events(data) if _as_datetime(e.end) > now), None)
+
+    async def async_get_events(
+        self, hass: HomeAssistant, start_date: datetime, end_date: datetime
+    ) -> list[CalendarEvent]:
+        if (data := self.data) is None:
+            return []
+        return [
+            e
+            for e in _all_events(data)
+            if _as_datetime(e.start) < end_date and _as_datetime(e.end) > start_date
+        ]

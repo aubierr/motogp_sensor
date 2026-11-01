@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "Saisonkalender, Wertungen, Ergebnisse, Live-Timing und Streckenwetter für die MotoGP. Daten aus der öffentlichen Pulselive-API (inoffizielle Integration).",
+        "data": {
+          "race_week_start_day": "Beginn der Rennwoche"
+        },
+        "data_description": {
+          "race_week_start_day": "Wann der Binärsensor Rennwoche eingeschaltet wird. Er schaltet sich am Ende des Renntages aus, frühestens 3 Stunden nach dem Rennstart."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Verbindung zur MotoGP-API fehlgeschlagen"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor ist bereits eingerichtet"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Optionen von MotoGP Sensor",
+        "data": {
+          "race_week_start_day": "Beginn der Rennwoche"
+        },
+        "data_description": {
+          "race_week_start_day": "Wann der Binärsensor Rennwoche eingeschaltet wird. Er schaltet sich am Ende des Renntages aus, frühestens 3 Stunden nach dem Rennstart."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "Montag der GP-Woche",
+        "sunday": "Sonntag vor der GP-Woche",
+        "event_start": "Erster Tag des GP (nur Rennwochenende)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Rennwoche begonnen",
+      "race_week_ended": "Rennwoche beendet",
+      "session_in_progress": "Session gestartet",
+      "session_finished": "Session beendet",
+      "session_red_flag": "Rote Flagge",
+      "session_cancelled": "Session abgesagt",
+      "session_delayed": "Session verzögert",
+      "live_timing_online": "Live-Timing online",
+      "live_timing_offline": "Live-Timing offline"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Rennwoche"
+      },
+      "live_timing_online": {
+        "name": "Live-Timing online"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Saisonkalender"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "Nächstes Rennen"
+      },
+      "next_session": {
+        "name": "Nächste Session"
+      },
+      "current_season": {
+        "name": "Aktuelle Saison"
+      },
+      "rider_standings": {
+        "name": "Fahrerwertung"
+      },
+      "team_standings": {
+        "name": "Teamwertung"
+      },
+      "constructor_standings": {
+        "name": "Herstellerwertung"
+      },
+      "last_race_results": {
+        "name": "Ergebnis des letzten Rennens"
+      },
+      "last_sprint_results": {
+        "name": "Ergebnis des letzten Sprints"
+      },
+      "session_status": {
+        "name": "Session-Status",
+        "state": {
+          "cancelled": "Abgesagt",
+          "delayed": "Verzögert",
+          "finished": "Beendet",
+          "in_progress": "Läuft",
+          "not_started": "Nicht gestartet",
+          "red_flag": "Rote Flagge"
+        }
+      },
+      "current_session": {
+        "name": "Aktuelle Session"
+      },
+      "race_lap_count": {
+        "name": "Aktuelle Runde"
+      },
+      "session_time_remaining": {
+        "name": "Verbleibende Session-Zeit"
+      },
+      "rider_list": {
+        "name": "Fahrerliste"
+      },
+      "rider_positions": {
+        "name": "Fahrerpositionen"
+      },
+      "top_three": {
+        "name": "Top drei"
+      },
+      "leader": {
+        "name": "Führender"
+      },
+      "fastest_lap": {
+        "name": "Schnellste Runde"
+      },
+      "pit_stops": {
+        "name": "Fahrer in der Box"
+      },
+      "track_weather": {
+        "name": "Streckenwetter",
+        "state": {
+          "clear_sky": "Klarer Himmel",
+          "drizzle": "Nieselregen",
+          "fog": "Nebel",
+          "freezing_drizzle": "Gefrierender Nieselregen",
+          "freezing_rain": "Gefrierender Regen",
+          "heavy_rain": "Starker Regen",
+          "heavy_showers": "Starke Schauer",
+          "light_rain": "Leichter Regen",
+          "mainly_clear": "Überwiegend klar",
+          "overcast": "Bedeckt",
+          "partly_cloudy": "Teilweise bewölkt",
+          "rain": "Regen",
+          "showers": "Schauer",
+          "snow": "Schnee",
+          "thunderstorm": "Gewitter"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "Spoilerfreier Modus"
+      }
+    }
+  }
+}

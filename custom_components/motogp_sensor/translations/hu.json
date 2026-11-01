@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "Szezonnaptár, pontversenyek, eredmények, élő időmérés és pályaidőjárás a MotoGP-hez. Adatok a nyilvános Pulselive API-ból (nem hivatalos integráció).",
+        "data": {
+          "race_week_start_day": "A versenyhét kezdete"
+        },
+        "data_description": {
+          "race_week_start_day": "Mikor kapcsol be a Versenyhét bináris érzékelő. A verseny napjának végén kapcsol ki, de legkorábban 3 órával a rajt után."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nem sikerült csatlakozni a MotoGP API-hoz"
+    },
+    "abort": {
+      "single_instance_allowed": "A MotoGP Sensor már be van állítva"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MotoGP Sensor beállításai",
+        "data": {
+          "race_week_start_day": "A versenyhét kezdete"
+        },
+        "data_description": {
+          "race_week_start_day": "Mikor kapcsol be a Versenyhét bináris érzékelő. A verseny napjának végén kapcsol ki, de legkorábban 3 órával a rajt után."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "A GP-hét hétfője",
+        "sunday": "A GP-hetet megelőző vasárnap",
+        "event_start": "A GP első napja (csak a versenyhétvége)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Versenyhét elkezdődött",
+      "race_week_ended": "Versenyhét véget ért",
+      "session_in_progress": "Session elkezdődött",
+      "session_finished": "Session véget ért",
+      "session_red_flag": "Piros zászló",
+      "session_cancelled": "Session törölve",
+      "session_delayed": "Session késik",
+      "live_timing_online": "Élő időmérés elérhető",
+      "live_timing_offline": "Élő időmérés nem elérhető"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Versenyhét"
+      },
+      "live_timing_online": {
+        "name": "Élő időmérés elérhető"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Szezonnaptár"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "Következő futam"
+      },
+      "next_session": {
+        "name": "Következő session"
+      },
+      "current_season": {
+        "name": "Aktuális szezon"
+      },
+      "rider_standings": {
+        "name": "Versenyzői pontverseny"
+      },
+      "team_standings": {
+        "name": "Csapatok pontversenye"
+      },
+      "constructor_standings": {
+        "name": "Konstruktőri pontverseny"
+      },
+      "last_race_results": {
+        "name": "Legutóbbi futam eredménye"
+      },
+      "last_sprint_results": {
+        "name": "Legutóbbi sprint eredménye"
+      },
+      "session_status": {
+        "name": "Session állapota",
+        "state": {
+          "cancelled": "Törölve",
+          "delayed": "Késik",
+          "finished": "Befejeződött",
+          "in_progress": "Folyamatban",
+          "not_started": "Nem kezdődött el",
+          "red_flag": "Piros zászló"
+        }
+      },
+      "current_session": {
+        "name": "Aktuális session"
+      },
+      "race_lap_count": {
+        "name": "Aktuális kör"
+      },
+      "session_time_remaining": {
+        "name": "Session hátralévő ideje"
+      },
+      "rider_list": {
+        "name": "Versenyzők listája"
+      },
+      "rider_positions": {
+        "name": "Versenyzők pozíciói"
+      },
+      "top_three": {
+        "name": "Első három"
+      },
+      "leader": {
+        "name": "Vezető"
+      },
+      "fastest_lap": {
+        "name": "Leggyorsabb kör"
+      },
+      "pit_stops": {
+        "name": "Versenyzők a boxban"
+      },
+      "track_weather": {
+        "name": "Pálya időjárása",
+        "state": {
+          "clear_sky": "Derült",
+          "drizzle": "Szitálás",
+          "fog": "Köd",
+          "freezing_drizzle": "Ónos szitálás",
+          "freezing_rain": "Ónos eső",
+          "heavy_rain": "Erős eső",
+          "heavy_showers": "Erős zápor",
+          "light_rain": "Gyenge eső",
+          "mainly_clear": "Túlnyomóan derült",
+          "overcast": "Borult",
+          "partly_cloudy": "Részben felhős",
+          "rain": "Eső",
+          "showers": "Zápor",
+          "snow": "Havazás",
+          "thunderstorm": "Zivatar"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "Spoilermentes mód"
+      }
+    }
+  }
+}

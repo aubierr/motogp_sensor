@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "ปฏิทินฤดูกาล ตารางคะแนน ผลการแข่งขัน ไลฟ์ไทมิ่ง และสภาพอากาศที่สนามสำหรับ MotoGP ข้อมูลจาก API สาธารณะของ Pulselive (อินทิเกรชันที่ไม่เป็นทางการ)",
+        "data": {
+          "race_week_start_day": "วันเริ่มสัปดาห์การแข่งขัน"
+        },
+        "data_description": {
+          "race_week_start_day": "เวลาที่เซ็นเซอร์ไบนารีสัปดาห์การแข่งขันจะเปิด และจะปิดเมื่อสิ้นสุดวันแข่ง โดยไม่เร็วกว่า 3 ชั่วโมงหลังการออกตัว"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "ไม่สามารถเชื่อมต่อกับ API ของ MotoGP"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor ถูกตั้งค่าไว้แล้ว"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "ตัวเลือกของ MotoGP Sensor",
+        "data": {
+          "race_week_start_day": "วันเริ่มสัปดาห์การแข่งขัน"
+        },
+        "data_description": {
+          "race_week_start_day": "เวลาที่เซ็นเซอร์ไบนารีสัปดาห์การแข่งขันจะเปิด และจะปิดเมื่อสิ้นสุดวันแข่ง โดยไม่เร็วกว่า 3 ชั่วโมงหลังการออกตัว"
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "วันจันทร์ของสัปดาห์ GP",
+        "sunday": "วันอาทิตย์ก่อนสัปดาห์ GP",
+        "event_start": "วันแรกของ GP (เฉพาะสุดสัปดาห์การแข่งขัน)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "สัปดาห์การแข่งขันเริ่มแล้ว",
+      "race_week_ended": "สัปดาห์การแข่งขันสิ้นสุดแล้ว",
+      "session_in_progress": "เซสชันเริ่มแล้ว",
+      "session_finished": "เซสชันจบแล้ว",
+      "session_red_flag": "ธงแดง",
+      "session_cancelled": "เซสชันถูกยกเลิก",
+      "session_delayed": "เซสชันล่าช้า",
+      "live_timing_online": "ไลฟ์ไทมิ่งออนไลน์",
+      "live_timing_offline": "ไลฟ์ไทมิ่งออฟไลน์"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "สัปดาห์การแข่งขัน"
+      },
+      "live_timing_online": {
+        "name": "ไลฟ์ไทมิ่งออนไลน์"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "ปฏิทินฤดูกาล"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "การแข่งขันถัดไป"
+      },
+      "next_session": {
+        "name": "เซสชันถัดไป"
+      },
+      "current_season": {
+        "name": "ฤดูกาลปัจจุบัน"
+      },
+      "rider_standings": {
+        "name": "ตารางคะแนนนักแข่ง"
+      },
+      "team_standings": {
+        "name": "ตารางคะแนนทีม"
+      },
+      "constructor_standings": {
+        "name": "ตารางคะแนนผู้ผลิต"
+      },
+      "last_race_results": {
+        "name": "ผลการแข่งขันล่าสุด"
+      },
+      "last_sprint_results": {
+        "name": "ผลสปรินต์ล่าสุด"
+      },
+      "session_status": {
+        "name": "สถานะเซสชัน",
+        "state": {
+          "cancelled": "ยกเลิก",
+          "delayed": "ล่าช้า",
+          "finished": "จบแล้ว",
+          "in_progress": "กำลังดำเนินการ",
+          "not_started": "ยังไม่เริ่ม",
+          "red_flag": "ธงแดง"
+        }
+      },
+      "current_session": {
+        "name": "เซสชันปัจจุบัน"
+      },
+      "race_lap_count": {
+        "name": "รอบปัจจุบัน"
+      },
+      "session_time_remaining": {
+        "name": "เวลาที่เหลือของเซสชัน"
+      },
+      "rider_list": {
+        "name": "รายชื่อนักแข่ง"
+      },
+      "rider_positions": {
+        "name": "ตำแหน่งนักแข่ง"
+      },
+      "top_three": {
+        "name": "สามอันดับแรก"
+      },
+      "leader": {
+        "name": "ผู้นำ"
+      },
+      "fastest_lap": {
+        "name": "รอบที่เร็วที่สุด"
+      },
+      "pit_stops": {
+        "name": "นักแข่งที่อยู่ในพิท"
+      },
+      "track_weather": {
+        "name": "สภาพอากาศที่สนาม",
+        "state": {
+          "clear_sky": "ท้องฟ้าแจ่มใส",
+          "drizzle": "ฝนปรอย",
+          "fog": "หมอก",
+          "freezing_drizzle": "ฝนปรอยเยือกแข็ง",
+          "freezing_rain": "ฝนเยือกแข็ง",
+          "heavy_rain": "ฝนตกหนัก",
+          "heavy_showers": "ฝนซู่หนัก",
+          "light_rain": "ฝนตกเล็กน้อย",
+          "mainly_clear": "ท้องฟ้าโปร่งเป็นส่วนใหญ่",
+          "overcast": "เมฆมาก",
+          "partly_cloudy": "มีเมฆบางส่วน",
+          "rain": "ฝนตก",
+          "showers": "ฝนซู่",
+          "snow": "หิมะ",
+          "thunderstorm": "พายุฝนฟ้าคะนอง"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "โหมดกันสปอยล์"
+      }
+    }
+  }
+}

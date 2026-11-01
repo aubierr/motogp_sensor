@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "Kalendář sezóny, pořadí, výsledky, live timing a počasí na okruhu pro MotoGP. Data z veřejného API Pulselive (neoficiální integrace).",
+        "data": {
+          "race_week_start_day": "Začátek závodního týdne"
+        },
+        "data_description": {
+          "race_week_start_day": "Kdy se zapne binární senzor Závodní týden. Vypne se na konci závodního dne, nejdříve 3 hodiny po startu závodu."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Nepodařilo se připojit k API MotoGP"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor je již nastaven"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Možnosti MotoGP Sensor",
+        "data": {
+          "race_week_start_day": "Začátek závodního týdne"
+        },
+        "data_description": {
+          "race_week_start_day": "Kdy se zapne binární senzor Závodní týden. Vypne se na konci závodního dne, nejdříve 3 hodiny po startu závodu."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "Pondělí týdne GP",
+        "sunday": "Neděle před týdnem GP",
+        "event_start": "První den GP (pouze závodní víkend)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Závodní týden začal",
+      "race_week_ended": "Závodní týden skončil",
+      "session_in_progress": "Session začala",
+      "session_finished": "Session skončila",
+      "session_red_flag": "Červená vlajka",
+      "session_cancelled": "Session zrušena",
+      "session_delayed": "Session zpožděna",
+      "live_timing_online": "Live timing online",
+      "live_timing_offline": "Live timing offline"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Závodní týden"
+      },
+      "live_timing_online": {
+        "name": "Live timing online"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Kalendář sezóny"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "Příští závod"
+      },
+      "next_session": {
+        "name": "Příští session"
+      },
+      "current_season": {
+        "name": "Aktuální sezóna"
+      },
+      "rider_standings": {
+        "name": "Pořadí jezdců"
+      },
+      "team_standings": {
+        "name": "Pořadí týmů"
+      },
+      "constructor_standings": {
+        "name": "Pořadí výrobců"
+      },
+      "last_race_results": {
+        "name": "Výsledky posledního závodu"
+      },
+      "last_sprint_results": {
+        "name": "Výsledky posledního sprintu"
+      },
+      "session_status": {
+        "name": "Stav session",
+        "state": {
+          "cancelled": "Zrušeno",
+          "delayed": "Zpožděno",
+          "finished": "Dokončeno",
+          "in_progress": "Probíhá",
+          "not_started": "Nezahájeno",
+          "red_flag": "Červená vlajka"
+        }
+      },
+      "current_session": {
+        "name": "Aktuální session"
+      },
+      "race_lap_count": {
+        "name": "Aktuální kolo"
+      },
+      "session_time_remaining": {
+        "name": "Zbývající čas session"
+      },
+      "rider_list": {
+        "name": "Seznam jezdců"
+      },
+      "rider_positions": {
+        "name": "Pozice jezdců"
+      },
+      "top_three": {
+        "name": "První tři"
+      },
+      "leader": {
+        "name": "Vedoucí jezdec"
+      },
+      "fastest_lap": {
+        "name": "Nejrychlejší kolo"
+      },
+      "pit_stops": {
+        "name": "Jezdci v boxech"
+      },
+      "track_weather": {
+        "name": "Počasí na okruhu",
+        "state": {
+          "clear_sky": "Jasno",
+          "drizzle": "Mrholení",
+          "fog": "Mlha",
+          "freezing_drizzle": "Mrznoucí mrholení",
+          "freezing_rain": "Mrznoucí déšť",
+          "heavy_rain": "Silný déšť",
+          "heavy_showers": "Silné přeháňky",
+          "light_rain": "Slabý déšť",
+          "mainly_clear": "Převážně jasno",
+          "overcast": "Zataženo",
+          "partly_cloudy": "Polojasno",
+          "rain": "Déšť",
+          "showers": "Přeháňky",
+          "snow": "Sníh",
+          "thunderstorm": "Bouřka"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "Režim bez spoilerů"
+      }
+    }
+  }
+}
