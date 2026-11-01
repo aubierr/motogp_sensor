@@ -48,10 +48,11 @@ async def test_setup_creates_entities(
     next_race = hass.states.get("sensor.motogp_next_race")
     assert next_race.state == "GRAND PRIX OF QATAR"
     assert next_race.attributes["round"] == 20
-    assert next_race.attributes["race_start"] == "2026-11-08T19:00:00+00:00"
-    assert next_race.attributes["sprint_start"] == "2026-11-07T19:00:00+00:00"
+    # 19:00 in Lusail (UTC+3).
+    assert next_race.attributes["race_start"] == "2026-11-08T16:00:00+00:00"
+    assert next_race.attributes["sprint_start"] == "2026-11-07T16:00:00+00:00"
 
-    assert hass.states.get("sensor.motogp_next_session").state == "2026-11-06T14:45:00+00:00"
+    assert hass.states.get("sensor.motogp_next_session").state == "2026-11-06T11:45:00+00:00"
     assert hass.states.get("sensor.motogp_current_season").state == "2026"
 
     standings = hass.states.get("sensor.motogp_rider_standings")

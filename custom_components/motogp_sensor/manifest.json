@@ -1,7 +1,7 @@
 {
   "domain": "motogp_sensor",
   "name": "MotoGP Sensor",
-  "codeowners": ["@RickyLeRoi"],
+  "codeowners": ["@aubierr"],
   "config_flow": true,
   "documentation": "https://github.com/aubierr/motogp_sensor",
   "integration_type": "service",

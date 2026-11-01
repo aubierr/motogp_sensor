@@ -71,7 +71,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: MotoGPConfigEntry) -> bo
     await asyncio.gather(results.async_refresh(), live.async_refresh(), weather.async_refresh())
 
     entry.runtime_data = MotoGPRuntimeData(
-        client=client,
         schedule=schedule,
         results=results,
         live=live,

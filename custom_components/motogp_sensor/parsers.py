@@ -193,8 +193,23 @@ def session_key(session_type: str, session_number: int | None) -> str:
     return f"{stype.lower()}{session_number or ''}"
 
 
-def parse_sessions(raw: Any) -> tuple[Session, ...]:
-    """Return the sessions of an event sorted by start time."""
+def _session_start(value: Any, circuit_tz: tzinfo | None) -> datetime | None:
+    """Parse a session date, which Pulselive gives in circuit local time.
+
+    The API labels it "+00:00" but the clock time is local: FP1 is "10:45" at
+    every circuit, and Sepang's "15:00+00:00" race ended before 08:00 UTC.
+    """
+    parsed = _datetime(value)
+    if parsed is None or circuit_tz is None:
+        return parsed
+    return parsed.replace(tzinfo=circuit_tz).astimezone(UTC)
+
+
+def parse_sessions(raw: Any, circuit_tz: tzinfo | None = None) -> tuple[Session, ...]:
+    """Return the sessions of an event sorted by start time (UTC).
+
+    ``circuit_tz`` is the circuit time zone; without it times stay as labelled.
+    """
     sessions: list[Session] = []
     for item in _list(raw, "sessions", "items"):
         session_id, stype = _str(item.get("id")), _str(item.get("type"))
@@ -208,7 +223,7 @@ def parse_sessions(raw: Any) -> tuple[Session, ...]:
                 key=session_key(stype, num),
                 type=stype.upper(),
                 number=num,
-                start=_datetime(item.get("date")),
+                start=_session_start(item.get("date"), circuit_tz),
                 status=_str(item.get("status")),
                 condition=dict(condition),
             )
@@ -488,40 +503,46 @@ WMO_CONDITIONS: dict[int, str] = {
 }
 WEATHER_CONDITIONS: list[str] = sorted(set(WMO_CONDITIONS.values()))
 
-# Keyed by the event short name returned by Pulselive.
-CIRCUIT_COORDINATES: dict[str, tuple[float, float]] = {
-    "AME": (30.1328, -97.6411),  # Circuit of the Americas
-    "ARA": (41.0786, -0.2047),  # MotorLand Aragón
-    "ARG": (-27.5056, -64.9133),  # Termas de Río Hondo
-    "AUS": (-38.5022, 145.2302),  # Phillip Island
-    "AUT": (47.2197, 14.7647),  # Red Bull Ring
-    "BRA": (-16.6829, -49.4054),  # Autódromo Internacional de Goiânia
-    "CAT": (41.5700, 2.2610),  # Circuit de Barcelona-Catalunya
-    "CZE": (49.2036, 16.4447),  # Automotodrom Brno
-    "EMI": (43.9612, 12.6830),  # Misano (Emilia-Romagna GP)
-    "FRA": (47.9561, 0.2072),  # Le Mans
-    "GBR": (52.0786, -1.0169),  # Silverstone
-    "GER": (50.7915, 12.6880),  # Sachsenring
-    "HUN": (46.9562, 18.0832),  # Balaton Park
-    "INA": (-8.8986, 116.3053),  # Mandalika
-    "IND": (28.3487, 77.5331),  # Buddh International Circuit
-    "ITA": (43.9975, 11.3719),  # Mugello
-    "JPN": (36.5322, 140.2275),  # Mobility Resort Motegi
-    "KAZ": (43.3372, 77.0089),  # Sokol International Racetrack
-    "MAL": (2.7608, 101.7381),  # Sepang
-    "NED": (52.9603, 6.5228),  # TT Circuit Assen
-    "POR": (37.2276, -8.6267),  # Algarve International Circuit
-    "QAT": (25.4900, 51.4542),  # Lusail
-    "RSM": (43.9612, 12.6830),  # Misano
-    "SPA": (36.7083, -6.0319),  # Jerez
-    "THA": (14.9575, 103.0847),  # Chang International Circuit
-    "USA": (30.1328, -97.6411),  # Circuit of the Americas
-    "VAL": (39.4851, -0.6280),  # Ricardo Tormo
+# (latitude, longitude, IANA time zone) keyed by the event short name.
+CIRCUITS: dict[str, tuple[float, float, str]] = {
+    "AME": (30.1328, -97.6411, "America/Chicago"),  # Circuit of the Americas
+    "ARA": (41.0786, -0.2047, "Europe/Madrid"),  # MotorLand Aragón
+    "ARG": (-27.5056, -64.9133, "America/Argentina/Buenos_Aires"),  # Termas de Río Hondo
+    "AUS": (-38.5022, 145.2302, "Australia/Melbourne"),  # Phillip Island
+    "AUT": (47.2197, 14.7647, "Europe/Vienna"),  # Red Bull Ring
+    "BRA": (-16.6829, -49.4054, "America/Sao_Paulo"),  # Goiânia
+    "CAT": (41.5700, 2.2610, "Europe/Madrid"),  # Circuit de Barcelona-Catalunya
+    "CZE": (49.2036, 16.4447, "Europe/Prague"),  # Automotodrom Brno
+    "EMI": (43.9612, 12.6830, "Europe/Rome"),  # Misano (Emilia-Romagna GP)
+    "FRA": (47.9561, 0.2072, "Europe/Paris"),  # Le Mans
+    "GBR": (52.0786, -1.0169, "Europe/London"),  # Silverstone
+    "GER": (50.7915, 12.6880, "Europe/Berlin"),  # Sachsenring
+    "HUN": (46.9562, 18.0832, "Europe/Budapest"),  # Balaton Park
+    "INA": (-8.8986, 116.3053, "Asia/Makassar"),  # Mandalika
+    "IND": (28.3487, 77.5331, "Asia/Kolkata"),  # Buddh International Circuit
+    "ITA": (43.9975, 11.3719, "Europe/Rome"),  # Mugello
+    "JPN": (36.5322, 140.2275, "Asia/Tokyo"),  # Mobility Resort Motegi
+    "KAZ": (43.3372, 77.0089, "Asia/Almaty"),  # Sokol International Racetrack
+    "MAL": (2.7608, 101.7381, "Asia/Kuala_Lumpur"),  # Sepang
+    "NED": (52.9603, 6.5228, "Europe/Amsterdam"),  # TT Circuit Assen
+    "POR": (37.2276, -8.6267, "Europe/Lisbon"),  # Algarve International Circuit
+    "QAT": (25.4900, 51.4542, "Asia/Qatar"),  # Lusail
+    "RSM": (43.9612, 12.6830, "Europe/Rome"),  # Misano
+    "SPA": (36.7083, -6.0319, "Europe/Madrid"),  # Jerez
+    "THA": (14.9575, 103.0847, "Asia/Bangkok"),  # Chang International Circuit
+    "USA": (30.1328, -97.6411, "America/Chicago"),  # Circuit of the Americas
+    "VAL": (39.4851, -0.6280, "Europe/Madrid"),  # Ricardo Tormo
 }
 
 
 def circuit_coordinates(event: Event) -> tuple[float, float] | None:
-    return CIRCUIT_COORDINATES.get((event.short_name or "").upper())
+    circuit = CIRCUITS.get((event.short_name or "").upper())
+    return (circuit[0], circuit[1]) if circuit else None
+
+
+def circuit_time_zone(event: Event) -> str | None:
+    circuit = CIRCUITS.get((event.short_name or "").upper())
+    return circuit[2] if circuit else None
 
 
 _DEGREES = re.compile(r"-?\d+(?:[.,]\d+)?")

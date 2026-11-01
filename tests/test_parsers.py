@@ -14,6 +14,10 @@ from custom_components.motogp_sensor.models import ClassificationRow
 from .conftest import CATEGORY_ID, SEASON_ID, load_fixture
 
 
+def _tz(short_name: str) -> ZoneInfo:
+    return ZoneInfo(parsers.CIRCUITS[short_name][2])
+
+
 def _events():
     return parsers.parse_events(load_fixture("events.json"))
 
@@ -52,13 +56,23 @@ def test_focus_event(today: date, expected: str | None) -> None:
 
 
 def test_sessions_cover_the_modern_weekend_format() -> None:
-    sessions = parsers.parse_sessions(load_fixture("sessions_mal.json"))
+    sessions = parsers.parse_sessions(load_fixture("sessions_mal.json"), _tz("MAL"))
     assert tuple(s.key for s in sessions) == parsers.SESSION_KEYS
     race = parsers.find_session(sessions, "race")
     assert race is not None and race.finished
-    assert race.start == datetime(2026, 11, 1, 15, 0, tzinfo=UTC)
-    now = datetime(2026, 10, 31, 12, 0, tzinfo=UTC)
+    # "15:00+00:00" in the API is 15:00 in Sepang (UTC+8).
+    assert race.start == datetime(2026, 11, 1, 7, 0, tzinfo=UTC)
+    now = datetime(2026, 10, 31, 5, 0, tzinfo=UTC)
     assert parsers.next_session(sessions, now).key == "sprint"
+    # Without the circuit time zone the labelled time is kept.
+    raw = parsers.parse_sessions(load_fixture("sessions_mal.json"))
+    assert parsers.find_session(raw, "race").start == datetime(2026, 11, 1, 15, 0, tzinfo=UTC)
+
+
+def test_every_circuit_has_a_valid_time_zone() -> None:
+    for short_name, (_lat, _lon, tz) in parsers.CIRCUITS.items():
+        assert ZoneInfo(tz), short_name
+    assert all(parsers.circuit_time_zone(e) for e in _events())
 
 
 @pytest.mark.parametrize(
@@ -73,18 +87,18 @@ def test_sessions_cover_the_modern_weekend_format() -> None:
             datetime(2026, 11, 6, tzinfo=UTC),
             datetime(2026, 11, 9, tzinfo=UTC),
         ),
-        # Race at 19:00 UTC ends after midnight in Tokyo: the grace period wins.
+        # Race at 16:00 UTC: 3 h later is after midnight in Tokyo, the grace wins.
         (
             "monday",
             "Asia/Tokyo",
             datetime(2026, 11, 2, tzinfo=ZoneInfo("Asia/Tokyo")),
-            datetime(2026, 11, 8, 22, 0, tzinfo=UTC),
+            datetime(2026, 11, 8, 19, 0, tzinfo=UTC),
         ),
     ],
 )
 def test_race_week_window(option: str, tz: str, start: datetime, end: datetime) -> None:
     qatar = next(e for e in _events() if e.short_name == "QAT")
-    sessions = parsers.parse_sessions(load_fixture("sessions_qat.json"))
+    sessions = parsers.parse_sessions(load_fixture("sessions_qat.json"), _tz("QAT"))
     window = parsers.race_week_window(qatar, sessions, option, ZoneInfo(tz))
     assert window == (start, end)
 

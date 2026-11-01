@@ -19,6 +19,7 @@ Rewrite following the Home Assistant integration guidelines (`entry.runtime_data
 
 ### Fixes
 
+- Session times were wrong by the circuit's UTC offset: Pulselive gives circuit local times labelled "+00:00" (FP1 is "10:45" everywhere). They are now converted with each circuit's time zone, which also fixes the live polling windows, the end of the race week and the race-time forecast.
 - No Spoiler mode had no effect; it now freezes standings, results and live classification.
 - The No Spoiler switch disappeared after a reconfiguration.
 - The race week device triggers were never offered (unique id mismatch).

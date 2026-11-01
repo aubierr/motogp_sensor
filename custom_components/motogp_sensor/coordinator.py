@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import Awaitable, Iterable
 from dataclasses import dataclass
-from datetime import UTC, datetime, time, timedelta
+from datetime import UTC, datetime, time, timedelta, tzinfo
 import logging
 
 from homeassistant.config_entries import ConfigEntry
@@ -53,7 +53,6 @@ _SCHEDULE_INTERVAL_EVENT = timedelta(minutes=30)
 class MotoGPRuntimeData:
     """Objects shared by the platforms of a config entry."""
 
-    client: MotoGPApiClient
     schedule: ScheduleCoordinator
     results: ResultsCoordinator
     live: LiveCoordinator
@@ -104,6 +103,21 @@ class MotoGPCoordinator[DataT](DataUpdateCoordinator[DataT]):
         raise NotImplementedError
 
 
+_unknown_circuits: set[str] = set()
+
+
+async def _circuit_tz(event: Event) -> tzinfo | None:
+    """Return the circuit time zone, needed to read session times."""
+    if (name := parsers.circuit_time_zone(event)) is None:
+        if event.short_name not in _unknown_circuits:
+            _unknown_circuits.add(event.short_name or "")
+            _LOGGER.warning(
+                "Unknown circuit %s: its session times are assumed to be UTC", event.short_name
+            )
+        return None
+    return await dt_util.async_get_time_zone(name)
+
+
 def _event_days(event: Event | None, now: datetime, extra_days: int = 0) -> bool:
     """Return True between the first day and the last day (+extra) of a GP."""
     if event is None:
@@ -132,7 +146,9 @@ class ScheduleCoordinator(MotoGPCoordinator[ScheduleData]):
         focus = parsers.find_focus_event(events, dt_util.now().date())
         sessions: tuple[Session, ...] = ()
         if focus is not None:
-            sessions = parsers.parse_sessions(await self.client.sessions(focus.id, category_id))
+            sessions = parsers.parse_sessions(
+                await self.client.sessions(focus.id, category_id), await _circuit_tz(focus)
+            )
         return ScheduleData(
             season_id=season_id,
             season_year=season_year,
@@ -187,7 +203,8 @@ class ResultsCoordinator(MotoGPCoordinator[ResultsData]):
         if (cached := self._sessions_cache.get(event.id)) is not None:
             return cached
         sessions = parsers.parse_sessions(
-            await self._limited(self.client.sessions(event.id, category_id))
+            await self._limited(self.client.sessions(event.id, category_id)),
+            await _circuit_tz(event),
         )
         if _settled(sessions, now):
             self._sessions_cache[event.id] = sessions
@@ -240,8 +257,10 @@ class ResultsCoordinator(MotoGPCoordinator[ResultsData]):
         )
 
     def _next_interval(self, data: ResultsData) -> timedelta:
+        # From the first day of a GP to the day after it (late penalties).
         schedule = self._schedule.data
-        if schedule and _event_days(schedule.focus, dt_util.now(), extra_days=1):
+        now = dt_util.now()
+        if schedule and any(_event_days(ev, now, extra_days=1) for ev in schedule.events):
             return RESULTS_INTERVAL_RACE_WEEKEND
         return RESULTS_INTERVAL_IDLE
 
