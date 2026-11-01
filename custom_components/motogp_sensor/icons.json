@@ -1,0 +1,105 @@
+{
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "default": "mdi:racing-helmet"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "default": "mdi:calendar-star"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "default": "mdi:flag-checkered"
+      },
+      "next_session": {
+        "default": "mdi:timer-play-outline"
+      },
+      "current_season": {
+        "default": "mdi:calendar-star"
+      },
+      "rider_standings": {
+        "default": "mdi:podium"
+      },
+      "team_standings": {
+        "default": "mdi:account-group"
+      },
+      "constructor_standings": {
+        "default": "mdi:trophy-outline"
+      },
+      "last_race_results": {
+        "default": "mdi:trophy"
+      },
+      "last_sprint_results": {
+        "default": "mdi:trophy-variant"
+      },
+      "session_status": {
+        "default": "mdi:traffic-light",
+        "state": {
+          "in_progress": "mdi:play-circle",
+          "finished": "mdi:flag-checkered",
+          "red_flag": "mdi:flag",
+          "cancelled": "mdi:cancel",
+          "delayed": "mdi:clock-alert-outline"
+        }
+      },
+      "current_session": {
+        "default": "mdi:motorbike"
+      },
+      "race_lap_count": {
+        "default": "mdi:counter"
+      },
+      "session_time_remaining": {
+        "default": "mdi:timer-sand"
+      },
+      "rider_list": {
+        "default": "mdi:account-multiple"
+      },
+      "rider_positions": {
+        "default": "mdi:format-list-numbered"
+      },
+      "top_three": {
+        "default": "mdi:podium-gold"
+      },
+      "leader": {
+        "default": "mdi:crown"
+      },
+      "fastest_lap": {
+        "default": "mdi:timer-outline"
+      },
+      "pit_stops": {
+        "default": "mdi:garage"
+      },
+      "track_weather": {
+        "default": "mdi:weather-partly-cloudy",
+        "state": {
+          "clear_sky": "mdi:weather-sunny",
+          "mainly_clear": "mdi:weather-sunny",
+          "partly_cloudy": "mdi:weather-partly-cloudy",
+          "overcast": "mdi:weather-cloudy",
+          "fog": "mdi:weather-fog",
+          "drizzle": "mdi:weather-rainy",
+          "light_rain": "mdi:weather-rainy",
+          "rain": "mdi:weather-pouring",
+          "heavy_rain": "mdi:weather-pouring",
+          "showers": "mdi:weather-rainy",
+          "heavy_showers": "mdi:weather-pouring",
+          "freezing_drizzle": "mdi:weather-snowy-rainy",
+          "freezing_rain": "mdi:weather-snowy-rainy",
+          "snow": "mdi:weather-snowy",
+          "thunderstorm": "mdi:weather-lightning-rainy"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "default": "mdi:eye-off",
+        "state": {
+          "off": "mdi:eye"
+        }
+      }
+    }
+  }
+}

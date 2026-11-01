@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "MotoGPのシーズンカレンダー、ランキング、結果、ライブタイミング、サーキットの天気。Pulselive公開APIのデータを使用します(非公式インテグレーション)。",
+        "data": {
+          "race_week_start_day": "レースウィークの開始"
+        },
+        "data_description": {
+          "race_week_start_day": "レースウィークのバイナリセンサーがオンになるタイミング。決勝日の終わりにオフになります(決勝スタートから最低3時間後)。"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "MotoGP APIに接続できませんでした"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor はすでに設定されています"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "MotoGP Sensor のオプション",
+        "data": {
+          "race_week_start_day": "レースウィークの開始"
+        },
+        "data_description": {
+          "race_week_start_day": "レースウィークのバイナリセンサーがオンになるタイミング。決勝日の終わりにオフになります(決勝スタートから最低3時間後)。"
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "GP週の月曜日",
+        "sunday": "GP週の前の日曜日",
+        "event_start": "GPの初日(レースウィークエンドのみ)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "レースウィーク開始",
+      "race_week_ended": "レースウィーク終了",
+      "session_in_progress": "セッション開始",
+      "session_finished": "セッション終了",
+      "session_red_flag": "赤旗",
+      "session_cancelled": "セッション中止",
+      "session_delayed": "セッション遅延",
+      "live_timing_online": "ライブタイミング接続",
+      "live_timing_offline": "ライブタイミング切断"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "レースウィーク"
+      },
+      "live_timing_online": {
+        "name": "ライブタイミング接続"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "シーズンカレンダー"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "次のレース"
+      },
+      "next_session": {
+        "name": "次のセッション"
+      },
+      "current_season": {
+        "name": "現在のシーズン"
+      },
+      "rider_standings": {
+        "name": "ライダーランキング"
+      },
+      "team_standings": {
+        "name": "チームランキング"
+      },
+      "constructor_standings": {
+        "name": "コンストラクターランキング"
+      },
+      "last_race_results": {
+        "name": "前回の決勝結果"
+      },
+      "last_sprint_results": {
+        "name": "前回のスプリント結果"
+      },
+      "session_status": {
+        "name": "セッションステータス",
+        "state": {
+          "cancelled": "中止",
+          "delayed": "遅延",
+          "finished": "終了",
+          "in_progress": "進行中",
+          "not_started": "未開始",
+          "red_flag": "赤旗"
+        }
+      },
+      "current_session": {
+        "name": "現在のセッション"
+      },
+      "race_lap_count": {
+        "name": "現在の周回"
+      },
+      "session_time_remaining": {
+        "name": "セッション残り時間"
+      },
+      "rider_list": {
+        "name": "ライダー一覧"
+      },
+      "rider_positions": {
+        "name": "ライダーの順位"
+      },
+      "top_three": {
+        "name": "トップ3"
+      },
+      "leader": {
+        "name": "首位"
+      },
+      "fastest_lap": {
+        "name": "ファステストラップ"
+      },
+      "pit_stops": {
+        "name": "ピットイン中のライダー"
+      },
+      "track_weather": {
+        "name": "サーキットの天気",
+        "state": {
+          "clear_sky": "快晴",
+          "drizzle": "霧雨",
+          "fog": "霧",
+          "freezing_drizzle": "着氷性の霧雨",
+          "freezing_rain": "着氷性の雨",
+          "heavy_rain": "強い雨",
+          "heavy_showers": "強いにわか雨",
+          "light_rain": "弱い雨",
+          "mainly_clear": "おおむね晴れ",
+          "overcast": "曇り",
+          "partly_cloudy": "晴れ時々曇り",
+          "rain": "雨",
+          "showers": "にわか雨",
+          "snow": "雪",
+          "thunderstorm": "雷雨"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "ネタバレ防止モード"
+      }
+    }
+  }
+}

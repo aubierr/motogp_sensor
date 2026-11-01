@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "Kalender musim, klasemen, hasil, live timing, dan cuaca sirkuit untuk MotoGP. Data dari API publik Pulselive (integrasi tidak resmi).",
+        "data": {
+          "race_week_start_day": "Awal pekan balapan"
+        },
+        "data_description": {
+          "race_week_start_day": "Kapan sensor biner Pekan balapan menyala. Sensor mati di akhir hari balapan, paling cepat 3 jam setelah start balapan."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Gagal terhubung ke API MotoGP"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor sudah dikonfigurasi"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opsi MotoGP Sensor",
+        "data": {
+          "race_week_start_day": "Awal pekan balapan"
+        },
+        "data_description": {
+          "race_week_start_day": "Kapan sensor biner Pekan balapan menyala. Sensor mati di akhir hari balapan, paling cepat 3 jam setelah start balapan."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "Senin pada pekan GP",
+        "sunday": "Minggu sebelum pekan GP",
+        "event_start": "Hari pertama GP (hanya akhir pekan balapan)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Pekan balapan dimulai",
+      "race_week_ended": "Pekan balapan berakhir",
+      "session_in_progress": "Sesi dimulai",
+      "session_finished": "Sesi selesai",
+      "session_red_flag": "Bendera merah",
+      "session_cancelled": "Sesi dibatalkan",
+      "session_delayed": "Sesi ditunda",
+      "live_timing_online": "Live timing online",
+      "live_timing_offline": "Live timing offline"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Pekan balapan"
+      },
+      "live_timing_online": {
+        "name": "Live timing online"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Kalender musim"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "Balapan berikutnya"
+      },
+      "next_session": {
+        "name": "Sesi berikutnya"
+      },
+      "current_season": {
+        "name": "Musim saat ini"
+      },
+      "rider_standings": {
+        "name": "Klasemen pembalap"
+      },
+      "team_standings": {
+        "name": "Klasemen tim"
+      },
+      "constructor_standings": {
+        "name": "Klasemen konstruktor"
+      },
+      "last_race_results": {
+        "name": "Hasil balapan terakhir"
+      },
+      "last_sprint_results": {
+        "name": "Hasil sprint terakhir"
+      },
+      "session_status": {
+        "name": "Status sesi",
+        "state": {
+          "cancelled": "Dibatalkan",
+          "delayed": "Ditunda",
+          "finished": "Selesai",
+          "in_progress": "Berlangsung",
+          "not_started": "Belum dimulai",
+          "red_flag": "Bendera merah"
+        }
+      },
+      "current_session": {
+        "name": "Sesi saat ini"
+      },
+      "race_lap_count": {
+        "name": "Lap saat ini"
+      },
+      "session_time_remaining": {
+        "name": "Sisa waktu sesi"
+      },
+      "rider_list": {
+        "name": "Daftar pembalap"
+      },
+      "rider_positions": {
+        "name": "Posisi pembalap"
+      },
+      "top_three": {
+        "name": "Tiga besar"
+      },
+      "leader": {
+        "name": "Pemimpin"
+      },
+      "fastest_lap": {
+        "name": "Lap tercepat"
+      },
+      "pit_stops": {
+        "name": "Pembalap di pit"
+      },
+      "track_weather": {
+        "name": "Cuaca sirkuit",
+        "state": {
+          "clear_sky": "Cerah",
+          "drizzle": "Gerimis",
+          "fog": "Kabut",
+          "freezing_drizzle": "Gerimis beku",
+          "freezing_rain": "Hujan beku",
+          "heavy_rain": "Hujan lebat",
+          "heavy_showers": "Hujan deras singkat",
+          "light_rain": "Hujan ringan",
+          "mainly_clear": "Sebagian besar cerah",
+          "overcast": "Mendung",
+          "partly_cloudy": "Berawan sebagian",
+          "rain": "Hujan",
+          "showers": "Hujan singkat",
+          "snow": "Salju",
+          "thunderstorm": "Badai petir"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "Mode tanpa spoiler"
+      }
+    }
+  }
+}

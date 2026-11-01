@@ -1,0 +1,330 @@
+[
+ {
+  "date": "2026-10-30T10:45:00+00:00",
+  "number": 1,
+  "condition": {
+   "track": "Dry",
+   "air": "30º",
+   "humidity": "74%",
+   "ground": "37º",
+   "weather": "Cloudy"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "9d85b9eb-a2e7-40c9-aa97-fe4e27e13e05",
+  "type": "FP",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-10-30T15:00:00+00:00",
+  "number": null,
+  "condition": {
+   "track": "Dry",
+   "air": "34º",
+   "humidity": "61%",
+   "ground": "49º",
+   "weather": "Cloudy"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "859f3c68-e84a-4a4c-8a5e-47a40ef45f93",
+  "type": "PR",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-10-31T10:10:00+00:00",
+  "number": 2,
+  "condition": {
+   "track": "Dry",
+   "air": "31º",
+   "humidity": "69%",
+   "ground": "38º",
+   "weather": "Clear"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "767d0f36-004b-4b3f-b062-0da30457951b",
+  "type": "FP",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-10-31T10:50:00+00:00",
+  "number": 1,
+  "condition": {
+   "track": "Dry",
+   "air": "32º",
+   "humidity": "66%",
+   "ground": "41º",
+   "weather": "Partly-Cloudy"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "72ab6dde-d667-4315-bba9-3df16da77acd",
+  "type": "Q",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-10-31T11:15:00+00:00",
+  "number": 2,
+  "condition": {
+   "track": "Dry",
+   "air": "33º",
+   "humidity": "63%",
+   "ground": "43º",
+   "weather": "Partly-Cloudy"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "e22e617f-7924-4186-907f-2fb629bd336d",
+  "type": "Q",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-10-31T15:00:00+00:00",
+  "number": null,
+  "condition": {
+   "track": "Dry",
+   "air": "36º",
+   "humidity": "52%",
+   "ground": "51º",
+   "weather": "Partly-Cloudy"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "dd4734d2-1b5f-4c61-9b6c-7129824319c3",
+  "type": "SPR",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-11-01T10:40:00+00:00",
+  "number": null,
+  "condition": {
+   "track": "Dry",
+   "air": "32º",
+   "humidity": "61%",
+   "ground": "40º",
+   "weather": "Clear"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "d55c880a-d9be-44e3-9351-62e3fd8b9372",
+  "type": "WUP",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ },
+ {
+  "date": "2026-11-01T15:00:00+00:00",
+  "number": null,
+  "condition": {
+   "track": "Dry",
+   "air": "36º",
+   "humidity": "47%",
+   "ground": "55º",
+   "weather": "Partly-Cloudy"
+  },
+  "circuit": "Petronas Sepang International Circuit",
+  "id": "f8adeb74-3941-43e1-91cd-e1883f341ded",
+  "type": "RAC",
+  "category": {
+   "id": "e8c110ad-64aa-4e8e-8a86-f2f152f6a942",
+   "legacy_id": 3,
+   "name": "MotoGP™"
+  },
+  "event": {
+   "id": "ea2ba334-b943-462f-aedb-084ac38408d1",
+   "name": "GRAND PRIX OF MALAYSIA",
+   "sponsored_name": "PETRONAS GRAND PRIX OF MALAYSIA ",
+   "short_name": "MAL",
+   "test": false,
+   "season": "2026",
+   "circuit": {
+    "id": "f5a7f3f8-0097-4810-a2da-eee749aedc77",
+    "name": "Petronas Sepang International Circuit",
+    "legacy_id": 75,
+    "place": "Sepang",
+    "nation": "MAL",
+    "events_id": null
+   },
+   "country": {
+    "iso": "MY",
+    "name": "Malaysia",
+    "region_iso": ""
+   }
+  },
+  "status": "FINISHED"
+ }
+]

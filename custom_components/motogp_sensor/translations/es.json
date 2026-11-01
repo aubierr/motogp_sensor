@@ -1,0 +1,161 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "MotoGP Sensor",
+        "description": "Calendario, clasificaciones, resultados, live timing y meteorología del circuito para MotoGP. Datos de la API pública de Pulselive (integración no oficial).",
+        "data": {
+          "race_week_start_day": "Inicio de la semana de carrera"
+        },
+        "data_description": {
+          "race_week_start_day": "Cuándo se activa el sensor binario Semana de carrera. Se desactiva al final del día de la carrera, y no antes de 3 horas después de la salida."
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "No se pudo conectar con la API de MotoGP"
+    },
+    "abort": {
+      "single_instance_allowed": "MotoGP Sensor ya está configurado"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opciones de MotoGP Sensor",
+        "data": {
+          "race_week_start_day": "Inicio de la semana de carrera"
+        },
+        "data_description": {
+          "race_week_start_day": "Cuándo se activa el sensor binario Semana de carrera. Se desactiva al final del día de la carrera, y no antes de 3 horas después de la salida."
+        }
+      }
+    }
+  },
+  "selector": {
+    "race_week_start_day": {
+      "options": {
+        "monday": "Lunes de la semana del GP",
+        "sunday": "Domingo anterior a la semana del GP",
+        "event_start": "Primer día del GP (solo fin de semana de carrera)"
+      }
+    }
+  },
+  "device_automation": {
+    "trigger_type": {
+      "race_week_started": "Semana de carrera iniciada",
+      "race_week_ended": "Semana de carrera terminada",
+      "session_in_progress": "Sesión iniciada",
+      "session_finished": "Sesión finalizada",
+      "session_red_flag": "Bandera roja",
+      "session_cancelled": "Sesión cancelada",
+      "session_delayed": "Sesión retrasada",
+      "live_timing_online": "Live timing en línea",
+      "live_timing_offline": "Live timing fuera de línea"
+    }
+  },
+  "entity": {
+    "binary_sensor": {
+      "race_week": {
+        "name": "Semana de carrera"
+      },
+      "live_timing_online": {
+        "name": "Live timing en línea"
+      }
+    },
+    "calendar": {
+      "season_calendar": {
+        "name": "Calendario de la temporada"
+      }
+    },
+    "sensor": {
+      "next_race": {
+        "name": "Próxima carrera"
+      },
+      "next_session": {
+        "name": "Próxima sesión"
+      },
+      "current_season": {
+        "name": "Temporada actual"
+      },
+      "rider_standings": {
+        "name": "Clasificación de pilotos"
+      },
+      "team_standings": {
+        "name": "Clasificación de equipos"
+      },
+      "constructor_standings": {
+        "name": "Clasificación de constructores"
+      },
+      "last_race_results": {
+        "name": "Resultados de la última carrera"
+      },
+      "last_sprint_results": {
+        "name": "Resultados del último sprint"
+      },
+      "session_status": {
+        "name": "Estado de la sesión",
+        "state": {
+          "cancelled": "Cancelada",
+          "delayed": "Retrasada",
+          "finished": "Finalizada",
+          "in_progress": "En curso",
+          "not_started": "No iniciada",
+          "red_flag": "Bandera roja"
+        }
+      },
+      "current_session": {
+        "name": "Sesión actual"
+      },
+      "race_lap_count": {
+        "name": "Vuelta actual"
+      },
+      "session_time_remaining": {
+        "name": "Tiempo restante de la sesión"
+      },
+      "rider_list": {
+        "name": "Lista de pilotos"
+      },
+      "rider_positions": {
+        "name": "Posiciones de los pilotos"
+      },
+      "top_three": {
+        "name": "Top tres"
+      },
+      "leader": {
+        "name": "Líder"
+      },
+      "fastest_lap": {
+        "name": "Vuelta rápida"
+      },
+      "pit_stops": {
+        "name": "Pilotos en boxes"
+      },
+      "track_weather": {
+        "name": "Meteorología del circuito",
+        "state": {
+          "clear_sky": "Despejado",
+          "drizzle": "Llovizna",
+          "fog": "Niebla",
+          "freezing_drizzle": "Llovizna helada",
+          "freezing_rain": "Lluvia helada",
+          "heavy_rain": "Lluvia fuerte",
+          "heavy_showers": "Chubascos fuertes",
+          "light_rain": "Lluvia débil",
+          "mainly_clear": "Mayormente despejado",
+          "overcast": "Cubierto",
+          "partly_cloudy": "Parcialmente nublado",
+          "rain": "Lluvia",
+          "showers": "Chubascos",
+          "snow": "Nieve",
+          "thunderstorm": "Tormenta"
+        }
+      }
+    },
+    "switch": {
+      "no_spoiler_mode": {
+        "name": "Modo sin spoilers"
+      }
+    }
+  }
+}
